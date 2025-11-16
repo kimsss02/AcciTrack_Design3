@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AcciTrack Admin Dashboard</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}" />
+</head>
+
+<body class="admin-dashboard">
+  <div class="sidebar">
+    <div class="logo-title">
+      <img src="{{ url_for('static', filename='AcciTrack-Logo.png') }}" alt="logo" class="logo-small" />
+    </div>
+    <a href="/admin_dashboard">Dashboard</a>
+    <a href="/verify">Verify Incidents</a>
+    <a href="/monitor">Monitor</a>
+    <a href="/history">History</a>
+    <a href="/admin_profile">Profile</a>
+    <a href="/users">Manage Users</a>
+    <a href="/logout">Log Out</a>
+  </div>
+
+  <div class="main">
+    <div class="header">
+      <h1>Welcome, Admin!</h1>
+    </div>
+      
+      <!-- Power BI -->
+      <iframe 
+        src="https://app.powerbi.com/reportEmbed?reportId=b4a33197-c267-4aa0-8736-76821ada7b50&autoAuth=true&ctid=a515e7c4-8cf7-4f97-b23b-96491645f7f0" 
+        allowFullScreen="true">
+      </iframe>
+  </script>
+</body>
+</html>

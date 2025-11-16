@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AcciTrack</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}" />
+
+</head>
+<body>
+  <div class="container">
+    <img src="{{ url_for('static', filename='AcciTrack-Logo.png') }}" alt="AcciTrack Logo" class="logo">
+    <h1>Predictive and Reporting System</h1>
+
+    <input type="email" id="email" placeholder="Email Address" required />
+    <input type="password" id="password" placeholder="Password" required />
+    <button class="login-btn" onclick="loginUser()">Login</button>
+  </div>
+
+  <script>
+  function loginUser() {
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
+    // Basic email format check
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(email)) {
+      alert("Please enter a valid email address.");
+      return;
+    }
+
+    fetch("/login", {
+      method: "POST",
+      credentials: "include",  
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ email, password })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.role === "admin") {
+        window.location.href = "/admin_dashboard";
+      } else if (data.role === "user") {
+        window.location.href = "/user_dashboard";
+      } else {
+        alert(data.error || "Login failed.");
+      }
+    })
+    .catch(err => {
+      console.error("Login request failed:", err);
+      alert("Server error during login.");
+    });
+  }
+
+
+</script>
+</body>
+</html>

@@ -1,0 +1,160 @@
+/* ---------------- Body & Layout ---------------- */
+body {
+  font-family: 'Poppins', sans-serif;
+  margin: 0;
+  display: flex;
+  background: #f4f7fc;
+}
+
+/* ---------------- Sidebar ---------------- */
+.sidebar {
+  width: 220px;
+  background: #d8e3f7;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar a {
+  display: block;
+  color: #1a2e79;
+  text-decoration: none;
+  margin: 10px 0;
+  padding: 10px;
+  border-radius: 5px;
+  transition: all 0.2s ease-in-out;
+}
+
+.sidebar a:hover,
+.sidebar a.active {
+  background: #1E3A8A;
+  color: white;
+}
+
+.logo-title {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.logo-title img {
+  width: 100px;
+}
+
+/* ---------------- Main Content ---------------- */
+.main {
+  flex: 1;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #ffffff;
+  padding: 15px 30px;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  margin-bottom: 20px;
+}
+
+.header h1 {
+  font-size: 24px;
+  color: #333;
+}
+
+/* Content Box */
+.content {
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  overflow-x: auto;
+}
+
+/* ---------------- Table Styles ---------------- */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'Poppins', sans-serif;
+  background: #fff;
+}
+
+th, td {
+  padding: 12px 15px;
+  text-align: center;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+th {
+  background-color: #1E3A8A;
+  color: white;
+  font-weight: 600;
+}
+
+tr:nth-child(even) {
+  background-color: #f3f4f6;
+}
+
+tr:hover {
+  background-color: #e0e7ff;
+}
+
+/* ---------------- Links ---------------- */
+.back-link {
+  margin-top: 20px;
+  display: inline-block;
+  color: #1E3A8A;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.back-link:hover {
+  text-decoration: underline;
+}
+
+/* ---------------- Headings ---------------- */
+h2 {
+  color: #1E3A8A;
+  margin-bottom: 20px;
+}
+
+/* ---------------- Responsive ---------------- */
+@media (max-width: 768px) {
+  body {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    flex-direction: row;
+    overflow-x: auto;
+  }
+
+  .sidebar a {
+    flex: 1 0 auto;
+    margin: 5px;
+    text-align: center;
+  }
+
+  .main {
+    padding: 10px;
+  }
+
+  .header {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .header h1 {
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
+
+  table th, table td {
+    padding: 8px 10px;
+    font-size: 14px;
+  }
+}

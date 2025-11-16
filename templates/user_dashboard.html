@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>User Dashboard - AcciTrack</title>
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/user_dashboard.css') }}" />
+</head>
+<body>
+  <div class="sidebar">
+    <div class="logo-title">
+      <img src="{{ url_for('static', filename='AcciTrack-Logo.png') }}" alt="logo" style="width: 100px;">
+    </div>
+    <a href="/user_dashboard">Dashboard</a>
+    <a href="/user_history">History</a>
+    <a href="/profile">Profile</a>
+    <a href="/logout">Log Out</a>
+  </div>
+
+  <div class="main">
+    <div class="header">
+      <h1>Welcome, User!</h1>
+    </div>
+
+          <!-- Power BI Embedded Report -->
+      <iframe 
+        src="https://app.powerbi.com/reportEmbed?reportId=b4a33197-c267-4aa0-8736-76821ada7b50&autoAuth=true&ctid=a515e7c4-8cf7-4f97-b23b-96491645f7f0" 
+        allowFullScreen="true">
+      </iframe>
+  </script>
+</body>
+</html>

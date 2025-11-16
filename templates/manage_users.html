@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Manage Users - AcciTrack Admin</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/manage_user.css') }}" />
+
+</head>
+<body>
+  <div class="sidebar">
+    <div class="logo-title">
+      <img src="{{ url_for('static', filename='AcciTrack-Logo.png') }}" alt="logo" style="width: 100px;">
+    </div>
+    <a href="/admin_dashboard">Dashboard</a>
+    <a href="/verify">Verify Incidents</a>
+    <a href="/monitor">Monitor</a>
+    <a href="/history">History</a>
+    <a href="/admin_profile">Profile</a>
+    <a href="/users">Manage Users</a>
+    <a href="/logout">Log Out</a>
+  </div>
+
+  <div class="main">
+    <div class="header">
+      <h1>Manage Users</h1>
+    </div>
+
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for user in users %}
+          <tr>
+            <form method="POST" action="{{ url_for('update_user', user_id=user.id) }}">
+              <td>{{ user.id }}</td>
+              <td><input type="text" name="email" value="{{ user.email }}"></td>
+              <td>
+                <select name="role">
+                  <option value="admin" {% if user.role == 'admin' %}selected{% endif %}>Admin</option>
+                  <option value="user" {% if user.role == 'user' %}selected{% endif %}>User</option>
+                </select>
+              </td>
+              <td>
+                <select name="status">
+                  <option value="active" {% if user.status == 'active' %}selected{% endif %}>Active</option>
+                  <option value="blocked" {% if user.status == 'blocked' %}selected{% endif %}>Blocked</option>
+                </select>
+              </td>
+              <td>
+                <button type="submit">Update</button>
+            </form>
+            <form method="POST" action="{{ url_for('delete_user', user_id=user.id) }}" style="display:inline;">
+              <button type="submit" onclick="return confirm('Are you sure?')">Delete</button>
+            </form>
+              </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <h3>Add New User</h3>
+      <form method="POST" action="{{ url_for('add_user') }}" class="add-user-form">
+        <input type="email" name="email" placeholder="Email" required>
+        <input type="password" name="password" placeholder="Password" required>
+        <select name="role">
+          <option value="user">User</option>
+          <option value="admin">Admin</option>
+        </select>
+        <select name="status">
+          <option value="active">Active</option>
+          <option value="blocked">Blocked</option>
+        </select>
+        <button type="submit">Add User</button>
+      </form>
+    </div>
+  </div>
+</body>
+</html>

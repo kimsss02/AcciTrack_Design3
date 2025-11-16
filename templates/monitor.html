@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Monitor</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/monitor.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo-title">
+            <img src="{{ url_for('static', filename='AcciTrack-Logo.png') }}" alt="logo">
+        </div>
+        <a href="/admin_dashboard">Dashboard</a>
+        <a href="/verify">Verify Incidents</a>
+        <a href="/monitor" class="active">Monitor</a>
+        <a href="/history">History</a>
+        <a href="/admin_profile">Profile</a>
+        <a href="/users">Manage Users</a>
+        <a href="/logout">Log Out</a>
+    </div>
+
+    <div class="main-container">
+        <!-- Camera displays row, edge to edge -->
+        <div class="video-cam-row">
+            <div class="video-container" id="video-box-1">
+                <img id="video-stream-1" src="" alt="Stream will appear here">
+                <span class="video-label">Camera 1</span>
+                <span id="placeholder-text-1">Stream not started</span>
+            </div>
+            <div class="video-container" id="video-box-2">
+                <img id="video-stream-2" src="" alt="Stream will appear here">
+                <span class="video-label">Camera 2</span>
+                <span id="placeholder-text-2">Stream not started</span>
+            </div>
+            <div class="video-container" id="video-box-3">
+                <img id="video-stream-3" src="" alt="Stream will appear here">
+                <span class="video-label">Camera 3</span>
+                <span id="placeholder-text-3">Stream not started</span>
+            </div>
+        </div>
+        <!-- Controls and terminal directly under camera displays -->
+        <div class="camera-controls-term">
+            <div class="controls">
+                <button onclick="startStream()">Start Stream</button>
+                <button onclick="stopStream()">Stop Stream</button>
+            </div>
+            <div class="terminal" id="terminal-log">
+                &gt;&gt; System ready...
+            </div>
+        </div>
+        <!-- Sensor panels grid -->
+        <div class="sensor-graphs">
+            <div class="sensor-panel">
+                <h3>Temperature</h3>
+                <div class="thermometer-outer">
+                    <div class="thermometer-inner" id="temperatureFill"></div>
+                </div>
+                <div class="info-row">
+                    <span id="temperatureValue" class="digital-value">-- °C</span>
+                    <span id="temperatureStatus" class="status-indicator"></span>
+                </div>
+            </div>
+            <div class="sensor-panel">
+                <h3>Humidity</h3>
+                <div class="humidity-bar">
+                    <div class="humidity-fill" id="humidityFill"></div>
+                </div>
+                <div class="info-row">
+                    <span id="humidityValue" class="digital-value">-- %</span>
+                    <span id="humidityStatus" class="status-indicator"></span>
+                </div>
+            </div>
+            <div class="sensor-panel">
+                <h3>Pressure</h3>
+                <canvas id="pressureChart"></canvas>
+                <div class="info-row">
+                    <span id="pressureValue" class="digital-value">-- hPa</span>
+                    <span id="pressureStatus" class="status-indicator"></span>
+                </div>
+            </div>
+            <div class="sensor-panel">
+                <h3>Gas</h3>
+                <div class="gas-bar" id="gasBar"></div>
+                <div class="info-row">
+                    <span id="gasValue" class="digital-value">--</span>
+                    <span id="gasStatus" class="status-indicator"></span>
+                </div>
+            </div>
+            <div class="sensor-panel">
+                <h3>Light (Lux)</h3>
+                <div class="lux-gauge">
+                    <div class="gauge-fill" id="luxFill"></div>
+                </div>
+                <div class="info-row">
+                    <span id="luxValue" class="digital-value">-- lx</span>
+                    <span id="luxStatus" class="status-indicator"></span>
+                </div>
+            </div>
+            <div class="sensor-panel">
+                <h3>Rain</h3>
+                <div class="rain-gauge">
+                    <canvas id="rainGaugeCanvas" width="120" height="60"></canvas>
+                </div>
+                <div class="info-row">
+                    <span id="rainValue" class="digital-value">--</span>
+                    <span id="rainStatus" class="status-indicator"></span>
+                </div>
+                <span id="rainRaw" class="rain-value-raw"></span>
+            </div>
+        </div>
+    </div>
+        <h3 id="toggleHeader" onclick="toggleCharts()" style="margin-bottom:0;">
+            Sensor Readings - Last 24 Hours &#9660;
+        </h3>
+        <div id="bottomCharts" class="bottom-chart hidden">
+            <div class="chart-row">
+                <div class="chart-box">
+                    <h4>Temperature (°C)</h4>
+                    <canvas id="tempChart" class="sensor-chart"></canvas>
+                </div>
+                <div class="chart-box">
+                    <h4>Humidity (%)</h4>
+                    <canvas id="humidityChart" class="sensor-chart"></canvas>
+                </div>
+            </div>
+            <div class="chart-row">
+                <div class="chart-box">
+                    <h4>Gas (kΩ)</h4>
+                    <canvas id="gasChart" class="sensor-chart"></canvas>
+                </div>
+                <div class="chart-box">
+                    <h4>Lux</h4>
+                    <canvas id="luxChart" class="sensor-chart"></canvas>
+                </div>
+            </div>
+        </div>
+    <script>
+        function startStream() {
+            for(let i=1;i<=3;i++) {
+                let streamEl = document.getElementById("video-stream-"+i);
+                let placeholderText = document.getElementById("placeholder-text-"+i);
+                streamEl.src = "/video_feed";
+                streamEl.style.display = "block";
+                placeholderText.style.display = "none";
+            }
+            logToTerminal(">> Stream started.");
+        }
+        function stopStream() {
+            for(let i=1;i<=3;i++) {
+                let streamEl = document.getElementById("video-stream-"+i);
+                let placeholderText = document.getElementById("placeholder-text-"+i);
+                streamEl.src = "";
+                streamEl.style.display = "none";
+                placeholderText.style.display = "block";
+            }
+            logToTerminal(">> Stream stopped.");
+        }
+        function logToTerminal(message) {
+            const terminalEl = document.getElementById("terminal-log");
+            terminalEl.textContent += "\n" + message;
+            terminalEl.scrollTop = terminalEl.scrollHeight;
+        }
+    </script>
+    <script>
+        async function checkForIncidents() {
+            try {
+                const response = await fetch('/incident_logs');
+                const data = await response.json();
+                if (data.length > 0) {
+                    data.forEach(logToTerminal);
+                }
+            } catch (error) {
+                console.error("Error fetching incident logs:", error);
+            }
+            setTimeout(checkForIncidents, 2000);
+        }
+        checkForIncidents();
+    </script>
+    <script>
+        function createLineChart(ctx, label, borderColor) {
+            return new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: label,
+                        data: [],
+                        borderColor: borderColor,
+                        fill: false,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    scales: {
+                        x: { display: false },
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+        }
+        const pressureChart = createLineChart(document.getElementById('pressureChart'), 'Pressure (hPa)', 'orange');
+        function addData(chart, value) {
+            const maxPoints = 20;
+            const now = new Date().toLocaleTimeString();
+            chart.data.labels.push(now);
+            chart.data.datasets[0].data.push(value);
+            if (chart.data.labels.length > maxPoints) {
+                chart.data.labels.shift();
+                chart.data.datasets[0].data.shift();
+            }
+            chart.update();
+        }
+        function updateIndicator(value, elementId, thresholds) {
+            const el = document.getElementById(elementId);
+            if (value < thresholds.safe) el.style.backgroundColor = "green";
+            else if (value < thresholds.warning) el.style.backgroundColor = "orange";
+            else el.style.backgroundColor = "red";
+        }
+        function drawRainGauge(canvas, rainLevel) {
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.beginPath();
+            ctx.arc(60, 60, 50, Math.PI, 2*Math.PI);
+            ctx.lineWidth = 15;
+            ctx.strokeStyle = "#eee";
+            ctx.stroke();
+            let angle = Math.PI + (rainLevel / 3) * Math.PI;
+            ctx.beginPath();
+            ctx.arc(60, 60, 50, Math.PI, angle);
+            ctx.strokeStyle = ["#a3e635", "#22d3ee", "#fbbf24", "#ef4444"][rainLevel];
+            ctx.stroke();
+            let x = 60 + 50 * Math.cos(angle);
+            let y = 60 + 50 * Math.sin(angle);
+            ctx.beginPath();
+            ctx.arc(x, y, 7, 0, 2*Math.PI);
+            ctx.fillStyle = ctx.strokeStyle;
+            ctx.fill();
+        }
+        function simulateRainSensor() {
+            const rainValueRaw = Math.floor(Math.random() * 1000);
+            let rainStatus, rainLevel, rainColor;
+            if (rainValueRaw < 200) {
+                rainStatus = "No Rain"; rainLevel = 0; rainColor = "#a3e635";
+            } else if (rainValueRaw < 500) {
+                rainStatus = "Light Rain"; rainLevel = 1; rainColor = "#22d3ee";
+            } else if (rainValueRaw < 800) {
+                rainStatus = "Moderate Rain"; rainLevel = 2; rainColor = "#fbbf24";
+            } else {
+                rainStatus = "Heavy Rain"; rainLevel = 3; rainColor = "#ef4444";
+            }
+            document.getElementById('rainValue').textContent = rainStatus;
+            document.getElementById('rainStatus').style.backgroundColor = rainColor;
+            document.getElementById('rainRaw').textContent = "Sensor Value: " + rainValueRaw;
+            drawRainGauge(document.getElementById('rainGaugeCanvas'), rainLevel);
+        }
+        setInterval(simulateRainSensor, 2000);
+        simulateRainSensor();
+        function updateSensorReadings() {
+            fetch('/sensor-readings')
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.error) {
+                        addData(pressureChart, data.pressure);
+                        document.getElementById('temperatureValue').textContent = `${data.temperature} °C`;
+                        document.getElementById('humidityValue').textContent = `${data.humidity} %`;
+                        document.getElementById('pressureValue').textContent = `${data.pressure} hPa`;
+                        document.getElementById('gasValue').textContent = `${data.gas}`;
+                        document.getElementById('luxValue').textContent = `${data.lux} lx`;
+                        document.getElementById('temperatureFill').style.height = `${Math.min(data.temperature, 100)}%`;
+                        document.getElementById('humidityFill').style.width = `${Math.min(data.humidity, 100)}%`;
+                        document.getElementById('gasBar').style.backgroundColor = data.gas > 30000 ? 'red' : data.gas > 10000 ? 'orange' : 'green';
+                        const luxDegree = Math.min(data.lux / 1000 * 360, 360);
+                        document.querySelector('.lux-gauge').style.background = `conic-gradient(gold ${luxDegree}deg, #eee ${luxDegree}deg)`;
+                        updateIndicator(data.temperature, "temperatureStatus", { safe: 30, warning: 40 });
+                        updateIndicator(data.humidity, "humidityStatus", { safe: 50, warning: 70 });
+                        updateIndicator(data.pressure, "pressureStatus", { safe: 1000, warning: 1020 });
+                        updateIndicator(data.gas, "gasStatus", { safe: 10000, warning: 30000 });
+                        updateIndicator(data.lux, "luxStatus", { safe: 300, warning: 800 });
+                    }
+                })
+                .catch(err => console.error("Sensor fetch error:", err));
+        }
+        setInterval(updateSensorReadings, 2000);
+    </script>
+    <script>
+        function toggleCharts() {
+            const charts = document.getElementById("bottomCharts");
+            const toggleHeader = document.getElementById("toggleHeader");
+            charts.classList.toggle("hidden");
+            if (toggleHeader.innerHTML.includes("▼")) {
+                toggleHeader.innerHTML = "Sensor Readings - Last 24 Hours &#9650;";
+            } else {
+                toggleHeader.innerHTML = "Sensor Readings - Last 24 Hours &#9660;";
+            }
+        }
+        const tempCtx = document.getElementById('tempChart').getContext('2d');
+        const humidityCtx = document.getElementById('humidityChart').getContext('2d');
+        const gasCtx = document.getElementById('gasChart').getContext('2d');
+        const luxCtx = document.getElementById('luxChart').getContext('2d');
+        const tempChart = new Chart(tempCtx, {
+            type: 'line',
+            data: { labels: [], datasets: [{ label: 'Temperature (°C)', data: [], borderColor: 'red', tension: 0.3 }] },
+            options: getOptions("Time", "°C")
+        });
+        const humidityChart = new Chart(humidityCtx, {
+            type: 'line',
+            data: { labels: [], datasets: [{ label: 'Humidity (%)', data: [], borderColor: 'blue', tension: 0.3 }] },
+            options: getOptions("Time", "%")
+        });
+        const gasChart = new Chart(gasCtx, {
+            type: 'line',
+            data: { labels: [], datasets: [{ label: 'Gas (kΩ)', data: [], borderColor: 'green', tension: 0.3 }] },
+            options: getOptions("Time", "kΩ")
+        });
+        const luxChart = new Chart(luxCtx, {
+            type: 'line',
+            data: { labels: [], datasets: [{ label: 'Lux', data: [], borderColor: 'orange', tension: 0.3 }] },
+            options: getOptions("Time", "Lux")
+        });
+        function getOptions(xLabel, yLabel) {
+            return {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: { mode: 'index', intersect: false },
+                scales: {
+                    x: { title: { display: true, text: xLabel } },
+                    y: { title: { display: true, text: yLabel }, beginAtZero: true }
+                }
+            };
+        }
+        async function fetch24HourSensorData() {
+            try {
+                const response = await fetch('/sensor-history');
+                const history = await response.json();
+                const labels = history.map(entry =>
+                    new Date(entry.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                );
+                tempChart.data.labels = labels;
+                tempChart.data.datasets[0].data = history.map(e => e.temperature);
+                humidityChart.data.labels = labels;
+                humidityChart.data.datasets[0].data = history.map(e => e.humidity);
+                gasChart.data.labels = labels;
+                gasChart.data.datasets[0].data = history.map(e => e.gas);
+                luxChart.data.labels = labels;
+                luxChart.data.datasets[0].data = history.map(e => e.lux);
+                tempChart.update();
+                humidityChart.update();
+                gasChart.update();
+                luxChart.update();
+            } catch (err) {
+                console.error("Failed to load 24h sensor data:", err);
+            }
+        }
+        fetch24HourSensorData();
+        setInterval(fetch24HourSensorData, 5 * 60 * 1000);
+    </script>
+</body>
+</html>

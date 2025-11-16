@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Profile - AcciTrack</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin_profile.css') }}" />
+</head>
+<body>
+
+  <div class="sidebar">
+    <div class="logo-title">
+      <img src="{{ url_for('static', filename='AcciTrack-Logo.png') }}" alt="logo">
+    </div>
+    <a href="/admin_dashboard">Dashboard</a>
+    <a href="/verify">Verify Incidents</a>
+    <a href="/monitor">Monitor</a>
+    <a href="/history">History</a>
+    <a href="/admin_profile">Profile</a>
+    <a href="/users">Manage Users</a>
+    <a href="/logout">Log Out</a>
+  </div>
+
+  <div class="main">
+    <div class="header">
+      <h1>Edit Admin Profile</h1>
+    </div>
+
+    <div class="form-container">
+      <form method="POST">
+        <label>Email:</label>
+        <input type="email" name="email" value="{{ email }}" required />
+
+        <label>New Password:</label>
+        <input type="password" name="password" placeholder="Leave blank to keep current password" />
+
+        <button type="submit">Update Profile</button>
+      </form>
+      <div class="note">⚠️ Leave the password field blank if you do not want to change it.</div>
+    </div>
+  </div>
+
+</body>
+</html>

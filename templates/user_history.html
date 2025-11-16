@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Prediction History - AcciTrack</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/user_history.css') }}" />
+</head>
+
+<body class="user-dashboard">
+  <div class="sidebar">
+    <div class="logo-title">
+      <img src="{{ url_for('static', filename='AcciTrack-Logo.png') }}" alt="logo" class="logo-small" />
+    </div>
+    <a href="/user_dashboard">Dashboard</a>
+    <a href="/user_history" class="active">History</a>
+    <a href="/profile">Profile</a>
+    <a href="/logout">Log Out</a>
+  </div>
+
+  <div class="main">
+    <div class="header">
+      <h1>Detection History</h1>
+    </div>
+
+    <div class="content">
+      <table class="history-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Accident Type</th>
+            <th>Temperature (°C)</th>
+            <th>Humidity (%)</th>
+            <th>Pressure (hPa)</th>
+            <th>Gas (ppm)</th>
+            <th>Light (Lux)</th>
+            <th>Time of Day</th>
+            <th>Weather</th>
+            <th>Recorded At</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% for row in history %}
+          <tr>
+            <td>{{ row.id }}</td>
+            <td>{{ row.accident_type }}</td>
+            <td>{{ row.temperature }}</td>
+            <td>{{ row.humidity }}</td>
+            <td>{{ row.pressure }}</td>
+            <td>{{ row.gas }}</td>
+            <td>{{ row.light }}</td>
+            <td>{{ row.time_of_day }}</td>
+            <td>{{ row.weather }}</td>
+            <td>{{ row.recorded_at }}</td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="10" style="text-align:center;">No records found.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </script>
+</body>
+</html>
