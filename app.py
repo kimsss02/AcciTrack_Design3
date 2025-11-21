@@ -38,7 +38,7 @@ db = mysql.connector.connect(
 )
 cursor = db.cursor(dictionary=True)
 
-SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://pytttt:YOUR_PASSWORD@pytttt.mysql.pythonanywhere-services.com/pytttt$pytttt_mytrack123'
+SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://pytttt:thesisdefended1sttake@pytttt.mysql.pythonanywhere-services.com/pytttt$pytttt_mytrack123'
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 # ---------------- AUTH ----------------
