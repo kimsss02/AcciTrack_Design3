@@ -138,25 +138,36 @@
         </div>
     <script>
         function startStream() {
-            for(let i=1;i<=3;i++) {
-                let streamEl = document.getElementById("video-stream-"+i);
-                let placeholderText = document.getElementById("placeholder-text-"+i);
-                streamEl.src = "/video_feed";
-                streamEl.style.display = "block";
-                placeholderText.style.display = "none";
-            }
-            logToTerminal(">> Stream started.");
+            // Only start Camera 1
+            let streamEl = document.getElementById("video-stream-1");
+            let placeholderText = document.getElementById("placeholder-text-1");
+
+            streamEl.src = "/video_feed";
+            streamEl.style.display = "block";
+            placeholderText.style.display = "none";
+
+            // Disable 2 and 3
+            document.getElementById("video-stream-2").src = "";
+            document.getElementById("video-stream-3").src = "";
+
+            document.getElementById("placeholder-text-2").style.display = "block";
+            document.getElementById("placeholder-text-3").style.display = "block";
+
+            logToTerminal(">> Stream started (Camera 1 only).");
         }
+
         function stopStream() {
-            for(let i=1;i<=3;i++) {
-                let streamEl = document.getElementById("video-stream-"+i);
-                let placeholderText = document.getElementById("placeholder-text-"+i);
+            for (let i = 1; i <= 3; i++) {
+                let streamEl = document.getElementById("video-stream-" + i);
+                let placeholderText = document.getElementById("placeholder-text-" + i);
+                
                 streamEl.src = "";
                 streamEl.style.display = "none";
                 placeholderText.style.display = "block";
             }
             logToTerminal(">> Stream stopped.");
         }
+
         function logToTerminal(message) {
             const terminalEl = document.getElementById("terminal-log");
             terminalEl.textContent += "\n" + message;

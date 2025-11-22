@@ -66,13 +66,13 @@ def my_custom_sink(predictions: dict, video_frame):
     elif frame.dtype != "uint8":
         frame = cv2.convertScaleAbs(frame)  # ensure 8-bit depth
 
-    resized_image = cv2.resize(frame, (640, 480))#for webcam, simplicity
+    #resized_image = cv2.resize(frame, (640, 480))#for webcam, simplicity
 
     print("First detection box:", detections.xyxy[0] if len(detections.xyxy) > 0 else "None")#For debugging purposes
 
     # Draw boxes first, then labels (better visibility)                                           # ---------------------#
-    annotated = box_annotator.annotate(scene=resized_image, detections=detections)               # WEBCAM CONFIGURATION #
-    annotated = label_annotator.annotate(scene=annotated, detections=detections, labels=labels)  # -------------------- #
+    #annotated = box_annotator.annotate(scene=resized_image, detections=detections)               # WEBCAM CONFIGURATION #
+    #annotated = label_annotator.annotate(scene=annotated, detections=detections, labels=labels)  # -------------------- #
     annotated = box_annotator.annotate(scene=frame.copy(), detections=detections)
     annotated = label_annotator.annotate(scene=annotated, detections=detections, labels=labels)
     annotated_small = cv2.resize(annotated, (640, 480))
@@ -114,7 +114,7 @@ def get_incident_logs():
 def start_pipeline():
     pipeline = InferencePipeline.init(
         model_id="traffic-accident-detection-xyood/1",
-        video_reference="rtsp://Accitrack;admin123@192.168.100.46/stream1",
+        video_reference="rtsp://Accitrack:admin123@192.168.100.46/stream1",
         #video_reference=0,  # Use webcam instead if needed
         on_prediction=my_custom_sink
     )
