@@ -114,8 +114,8 @@ def get_incident_logs():
 def start_pipeline():
     pipeline = InferencePipeline.init(
         model_id="traffic-accident-detection-xyood/1",
-        #video_reference="rtsp://kkeiferpm:Unknown_0974@192.168.1.16/stream1",
-        video_reference=0,  # Use webcam instead if needed
+        video_reference="rtsp://Accitrack;admin123@192.168.100.46/stream1",
+        #video_reference=0,  # Use webcam instead if needed
         on_prediction=my_custom_sink
     )
     pipeline.start()
