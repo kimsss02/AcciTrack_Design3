@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 
 # --- Configuration ---
 os.environ["OPENCV_FFMPEG_CAPTURE_OPTIONS"] = "rtsp_transport;tcp"
-cooldown_seconds = 10  # seconds between allowed incident reports
+cooldown_seconds = 5  # seconds between allowed incident reports
 
 # --- Annotators ---
 label_annotator = sv.LabelAnnotator()
