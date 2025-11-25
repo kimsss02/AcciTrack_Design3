@@ -8,6 +8,8 @@ from routes import register_routes
 import numpy as np
 from inference_worker import start_pipeline 
 from threading import Thread
+from datetime import datetime
+import requests
 
 
 app = Flask(__name__)
@@ -37,9 +39,6 @@ db = mysql.connector.connect(
     autocommit=True
 )
 cursor = db.cursor(dictionary=True)
-
-SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://pytttt:thesisdefended1sttake@pytttt.mysql.pythonanywhere-services.com/pytttt$pytttt_mytrack123'
-SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 # ---------------- AUTH ----------------
 @app.route('/login', methods=['POST'])
@@ -88,7 +87,7 @@ def history():
         return redirect('/login')
 
     cursor.execute("""
-        SELECT id, accident_type, temperature, humidity, time_of_day, weather, recorded_at
+        SELECT id, accident_type, temperature, humidity, pressure, gas, light, time_of_day, weather, recorded_at
         FROM detection
         ORDER BY recorded_at DESC
     """)
@@ -133,6 +132,58 @@ def verify_page():
         return redirect('/')
     return render_template('verify.html')
 
+@app.route('/verify/<action>/<filename>', methods=['POST'])
+def verify_incident(action, filename):
+    if 'user_id' not in session or session.get('role') != 'admin':
+        return jsonify({"error": "Unauthorized"}), 401
+
+    if action not in ["approve", "reject"]:
+        return jsonify({"status": "error", "error": "Invalid action"}), 400
+
+    if action == "approve":
+        # Try fetching sensor data from ESP32
+        try:
+            resp = requests.get("http://192.168.100.207/sensor-data", timeout=3)
+            resp.raise_for_status()
+            sensor_data = resp.json()
+        except Exception as e:
+            print("❌ Failed to fetch from ESP32:", e)
+            return jsonify({"status": "error", "error": "Failed to read sensor data"}), 500
+
+        # Insert into MySQL
+        approved_at = datetime.now()
+        try:
+            cursor.execute("""
+                INSERT INTO detection
+                (accident_type, temperature, humidity, pressure, gas, light, time_of_day, weather, recorded_at)
+                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)
+            """, (
+                sensor_data["accident_type"],
+                sensor_data["temperature"],
+                sensor_data["humidity"],
+                sensor_data["pressure"],
+                sensor_data["gas"],
+                sensor_data["lux"],
+                sensor_data["time_of_day"],
+                sensor_data["weather"],
+                approved_at
+            ))
+            db.commit()
+        except Exception as e:
+            print("❌ Database insert failed:", e)
+            return jsonify({"status": "error", "error": "Database error"}), 500
+
+        return jsonify({"status": "approved", "data": {**sensor_data, "approved_at": approved_at.strftime("%Y-%m-%d %H:%M:%S")}})
+
+    elif action == "reject":
+        # Remove file logic (optional)
+        try:
+            # Example: os.remove(f"static/pending_incidents/{filename}")
+            pass
+        except Exception as e:
+            print("❌ Failed to delete file:", e)
+        return jsonify({"status": "rejected"})
+
 # user_history
 @app.route('/user_history')
 def user_history():
@@ -140,7 +191,7 @@ def user_history():
         return redirect('/login')
     
     cursor.execute("""
-        SELECT id, accident_type, temperature, humidity, time_of_day, weather, recorded_at
+        SELECT id, accident_type, temperature, humidity, pressure, gas, light, time_of_day, weather, recorded_at
         FROM detection
         ORDER BY recorded_at DESC
     """)

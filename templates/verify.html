@@ -47,23 +47,25 @@
     function handleIncident(filename, action) {
         const url = `/verify/${action}/${filename}`;
         
-        fetch(url, {
-            method: "POST"
-        })
+        fetch(url, { method: "POST" })
         .then(res => res.json())
         .then(data => {
             if (data.status === "approved") {
-                const readings = data.data.sensor_data;
+                const readings = data.data;  // use data.data directly
                 const sensorBox = document.getElementById(`sensor-${filename}`);
                 sensorBox.style.display = 'block';
                 sensorBox.innerHTML = `
                     <strong>Sensor Readings:</strong><br>
+                    Accident Type: ${readings.accident_type}<br>
                     Temperature: ${readings.temperature} °C<br>
                     Humidity: ${readings.humidity} %<br>
+                    Pressure: ${readings.pressure} hPa<br>
                     Gas: ${readings.gas}<br>
                     Light: ${readings.lux}<br>
-                    Time: ${data.data.approved_at}<br>
-                    Location: ${data.data.location}
+                    Time of Day: ${readings.time_of_day}<br>
+                    Weather: ${readings.weather}<br>
+                    Recorded At: ${readings.approved_at}<br>
+                    Location: ${readings.location}
                 `;
             } else if (data.status === "rejected") {
                 document.getElementById(filename).remove();
@@ -76,6 +78,7 @@
             alert("❌ Network error");
         });
     }
+
     </script>
 
 </body>
